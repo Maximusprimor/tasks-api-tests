@@ -1,11 +1,14 @@
 package br.ce.wcaquino.tasks.apitest;
 
+import java.net.MalformedURLException;
+
 import org.hamcrest.CoreMatchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import junit.framework.Assert;
 
 public class APITest {
 	
@@ -56,6 +59,33 @@ public class APITest {
 		    .body("message", CoreMatchers.is("Due date must not be in past"))
 		;
 		
+	}
+	@Test
+	public void deveRemoverTarefaComSucesso() {		
+		
+		//inserir
+		Integer id = RestAssured.given()
+		.body("{\"task\": \"Tarefa para Remocao\", \"dueDate\": \"2021-11-25\"}")
+		.contentType(ContentType.JSON)
+		.when()
+		    .post("/todo")
+		.then()
+		    .log().all()
+		    .statusCode(201)
+		    .extract().path("id")
+		;
+		
+		System.out.println(id);
+		
+		//remover
+		RestAssured.given()
+		.when()
+			.delete("/todo/"+id)
+		.then()
+			.statusCode(204)
+		;
+
 	}	
+	
 	
 }
